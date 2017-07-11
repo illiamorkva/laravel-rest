@@ -12,8 +12,9 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
-Route::resource('users','UsersController',['only' => [
-    'index','store','show','update','destroy'
-]]);
+Route::group(['namespace' => 'Api'], function() {
+    Route::resource('users', 'UsersController', ['only' => [
+        'index', 'store', 'show', 'update', 'destroy'
+    ]]);
+});
 
