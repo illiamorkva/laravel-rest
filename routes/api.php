@@ -13,8 +13,11 @@ use Illuminate\Http\Request;
 |
 */
 Route::group(['namespace' => 'Api'], function() {
+
     Route::resource('users', 'UsersController', ['only' => [
         'index', 'store', 'show', 'update', 'destroy'
     ]]);
+
+    Route::resource('books', 'BooksController');
 });
 
