@@ -15,9 +15,9 @@ class BooksController extends Controller
      */
     public function index()
     {
-       $books = Book::all();
+        $books = Book::all()->toArray();
 
-       return $books;
+        return response()->json($books);
     }
 
     /**
@@ -49,7 +49,19 @@ class BooksController extends Controller
      */
     public function show($id)
     {
-        //
+        try{
+            $book = Book::find($id);
+
+            if(!$book){
+                return response()->json(['This id does not exist'], 404);
+            }
+
+            return response()->json($book,200);
+
+        }catch (\Exception $e){
+            Log::critical("Could not show book: {$e->getCode()}, {$e->getLine()}, {$e->getMessage()}");
+            return response('Something bad', 500);
+        }
     }
 
     /**

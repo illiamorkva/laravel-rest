@@ -30,4 +30,15 @@ class BooksControllerTest extends TestCase
             ]);
         }
     }
+
+    public function testShowMethodReturnsParticularBook()
+    {
+        $user = factory(User::class)->create();
+
+        $book = factory(Book::class)->create(['user_id' => $user->id]);
+
+        $this
+            ->get(route('books.show',[$book->id]))
+            ->assertStatus(200);
+    }
 }
