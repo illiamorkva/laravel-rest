@@ -31,4 +31,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(Book::class);
     }
+
+    public static function findByEmail($email)
+    {
+        return self::where('email', $email)->first();
+    }
 }

@@ -19,5 +19,10 @@ Route::group(['namespace' => 'Api'], function() {
     ]]);
 
     Route::resource('books', 'BooksController');
+
+    Route::group(['prefix' => 'auth', 'namespace' => 'Auth', 'as' => 'api.auth'], function() {
+       Route::post('login', 'AuthController@login')->name('.login');
+       Route::post('register', 'AuthController@register')->name('.register');
+    });
 });
 
