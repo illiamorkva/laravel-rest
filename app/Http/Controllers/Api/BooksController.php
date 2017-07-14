@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Book;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Log;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class BooksController extends Controller
 {
@@ -38,7 +40,19 @@ class BooksController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $user = JWTAuth::toUser(JWTAuth::getToken());
+
+        try{
+            $user->books()->create([
+                'name' => $request->input('name'),
+                'price' => $request->input('price')
+            ]);
+            return response()->json(['status'=>true,'Great thanks'],200);
+
+        }catch (\Exception $e){
+            Log::critical("Could not store book: {$e->getCode()}, {$e->getLine()}, {$e->getMessage()}");
+            return response('Something bad', 500);
+        }
     }
 
     /**
@@ -84,7 +98,29 @@ class BooksController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try{
+            $book = Book::find($id);
+
+            if(!$book){
+                return response()->json(['This id does not exist'], 404);
+            }
+
+            $user = JWTAuth::toUser(JWTAuth::getToken());
+
+            if($user->id != $book->user_id){
+                return response()->json(['Unauthenticated'], 401);
+            }
+
+            $book->name = $request->input('name');
+            $book->price = $request->input('price');
+            $book->save();
+
+            return response()->json(['status'=>true,'Great thanks'],200);
+
+        }catch (\Exception $e){
+            Log::critical("Could not update book: {$e->getCode()}, {$e->getLine()}, {$e->getMessage()}");
+            return response('Something bad', 500);
+        }
     }
 
     /**
@@ -95,6 +131,26 @@ class BooksController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try{
+            $book = Book::find($id);
+
+            if(!$book){
+                return response()->json(['This id does not exist'], 404);
+            }
+
+            $user = JWTAuth::toUser(JWTAuth::getToken());
+
+            if($user->id != $book->user_id){
+                return response()->json(['Unauthenticated'], 401);
+            }
+
+            $book->delete();
+
+            return response()->json('Book deleted', 200);
+
+        } catch(\Exception $e) {
+            Log::critical("Could not delete book: {$e->getCode()}, {$e->getLine()}, {$e->getMessage()}");
+            return response('Something bad', 500);
+        }
     }
 }

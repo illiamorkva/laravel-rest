@@ -18,7 +18,9 @@ Route::group(['namespace' => 'Api'], function() {
         'index', 'store', 'show', 'update', 'destroy'
     ]]);
 
-    Route::resource('books', 'BooksController');
+    Route::group(['middleware' => 'jwt.auth'], function() {
+        Route::resource('books', 'BooksController');
+    });
 
     Route::group(['prefix' => 'auth', 'namespace' => 'Auth', 'as' => 'api.auth'], function() {
        Route::post('login', 'AuthController@login')->name('.login');
